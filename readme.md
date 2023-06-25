@@ -1,0 +1,1 @@
+First we need to go through all y values before we can go to x and always positiv
