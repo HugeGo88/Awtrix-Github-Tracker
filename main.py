@@ -1,12 +1,13 @@
 import requests
 import json
 from datetime import datetime, timedelta
-from collections import Counter
 import os
-import pandas as pd
 
 json_path = "json"
 json_commits_path = f"{json_path}/commits"
+# create list of all days
+base = datetime.today()
+days = [(base - timedelta(days=x), 0) for x in range(365)]
 
 def load_github_data():
     api_url = "https://api.github.com/users/hugego88/repos"
@@ -30,7 +31,7 @@ def load_github_data():
 
 
 def prepare_data():
-    all_commit_dates = []
+    commit_dates = []
 
     files = os.listdir(f"./{json_commits_path}")
     for file in files:
@@ -39,18 +40,13 @@ def prepare_data():
         for commit in commits:
             commit_date_str = commit["commit"]["committer"]["date"]
             commit_date = datetime.strptime(commit_date_str, '%Y-%m-%dT%H:%M:%SZ')
-            all_commit_dates.append(commit_date)
-    all_commit_dates.sort()
+            commit_dates.append(commit_date)
+    commit_dates.sort()
 
-    # create list of all days
-    base = datetime.today()
-    date_list = [(base - timedelta(days=x), 0) for x in range(365)]
-
-
-
-    print(all_commit_dates)
-    #dcounts = Counter(d[0] for d in all_commit_dates)
-    #print(dcounts)
+    for commit_date in commit_dates:
+        for i, day in enumerate(days):
+            if(day[0].date() == commit_date.date()):
+                days[i] = (day[0], day[1] +1 )
 
 
 if __name__ == '__main__':
