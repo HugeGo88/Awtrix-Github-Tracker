@@ -71,7 +71,7 @@ class awtrix_github:
         for i, day in enumerate(self.days):
             if (day[1] != 0):
                 self.days[i] = (day[0], int(
-                    float(day[1])/float(self.max_commits)*175.0+65))
+                    float(day[1])/float(self.max_commits)*110.0+140))
 
     def create_json(self):
         self.app_data = Object()
@@ -81,7 +81,7 @@ class awtrix_github:
         self.app_data.draw[0].dp = [31, 8, f"#FFFFFF"]
         self.app_data.draw.pop()
         j = 0
-        offset = ((datetime.today()).weekday() + 5) % 7
+        offset = (7-(datetime.today()).weekday()+5) % 7
         for i, day in enumerate(self.days):
             if (i == 0):
                 self.app_data.draw.append(Object())
@@ -114,10 +114,24 @@ class awtrix_github:
         self.client.connect(broker, port)
         return self.client
 
+    def create_folders(self):
+        if not (os.path.exists(f"./{self.json_path}")):
+            os.makedirs(f"./{self.json_path}")
+        if not (os.path.exists(f"./{self.json_commits_path}")):
+            os.makedirs(f"./{self.json_commits_path}")
+
 
 if __name__ == '__main__':
     awtrix = awtrix_github()
-    # awtrix.load_github_data()
+    awtrix.create_folders()
+    if (os.path.exists(f"./{awtrix.json_path}/repos.json")):
+        mod_file_time_str = os.path.getmtime(
+            f"./{awtrix.json_path}/repos.json")
+        t_obj = datetime.fromtimestamp(mod_file_time_str)
+        if (t_obj.date() != datetime.today().date()):
+            awtrix.load_github_data()
+    else:
+        awtrix.load_github_data()
     awtrix.prepare_data()
     awtrix.create_json()
     awtrix.connect_mqtt()
