@@ -67,33 +67,33 @@ class awtrix_github:
                         self.max_commits = day[1]
 
         for i, day in enumerate(self.days):
-            self.days[i] = (day[0], int(float(day[1])/float(self.max_commits)*15.0))
+            if(day[1] != 0):
+                self.days[i] = (day[0], int(float(day[1])/float(self.max_commits)*255.0+30))
+                print(self.days[i][1])
 
     def create_json(self):
         self.app_data = Object()
         self.app_data.icon = 5251
-        self.app_data.duration = 100
+        self.app_data.duration = 10
         self.app_data.draw = [Object()]
         self.app_data.draw[0].dp = [31, 8, f"#0000FF"]
         self.app_data.draw.pop()
         j = 0
-        offset = 6
+        offset = 5
         for i, day in enumerate(self.days):
             if(day[1] != 0):
+                print(day[0])
                 self.app_data.draw.append(Object())
-                row = ((i+offset)%7)
+                row = 7-((i+offset)%7)
                 column = 31-int((i+offset)/7)
                 #app_data.draw[j].dp = [column, row, f"#{day[1]:X}{day[1]:X}{day[1]:X}"]
-                #app_data.draw[j].dp = [column, row, f"#00{day[1]:X}000"]
-                if(i == 0):
-                    self.app_data.draw[j].dp = [column, row, f"#0000FF"]
-                else:
-                    self.app_data.draw[j].dp = [column, row, f"#00FF00"]
+                self.app_data.draw[j].dp = [column, row, f"#00{day[1]:02X}00"]
+                #self.app_data.draw[j].dp = [column, row, f"#00FF00"]
                 j += 1
-                if(j > 15):
+                if(j >= 16):
                     break
 
-        print(self.app_data.toJSON())
+       # print(self.app_data.toJSON())
 
     def send_mqtt_msg(self):
         topic = "awtrix_6ff9b8/notify"
