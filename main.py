@@ -8,7 +8,7 @@ import time
 class Object:
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, 
-            sort_keys=True, indent=4)
+            sort_keys=True)
 
 class awtrix_github:
     json_path = "json"
@@ -68,7 +68,7 @@ class awtrix_github:
 
         for i, day in enumerate(self.days):
             if(day[1] != 0):
-                self.days[i] = (day[0], int(float(day[1])/float(self.max_commits)*255.0+30))
+                self.days[i] = (day[0], int(float(day[1])/float(self.max_commits)*155.0+100))
 
     def create_json(self):
         self.app_data = Object()
@@ -78,19 +78,27 @@ class awtrix_github:
         self.app_data.draw[0].dp = [31, 8, f"#0000FF"]
         self.app_data.draw.pop()
         j = 0
-        offset = 5
+        offset = ((datetime.today()).weekday() + 5) % 7
         for i, day in enumerate(self.days):
+            if(i == 0):
+                self.app_data.draw.append(Object())
+                row = 7-((i+offset)%7)
+                column = 31-int((i+offset)/7)
+                self.app_data.draw[j].dp = [column, row, f"#0000FF"]
+                j += 1
+                continue
             if(day[1] != 0):
                 self.app_data.draw.append(Object())
                 row = 7-((i+offset)%7)
                 column = 31-int((i+offset)/7)
                 self.app_data.draw[j].dp = [column, row, f"#00{day[1]:02X}00"]
                 j += 1
-                if(j >= 16):
+                if(j >= 49):
                     break
 
     def send_mqtt_msg(self):
         topic = "awtrix_6ff9b8/notify"
+        #topic = "awtrix_6ff9b8/custom/github"
         result = self.client.publish(topic, self.app_data.toJSON())
         # result: [0, 1]
         status = result[0]
@@ -109,7 +117,7 @@ class awtrix_github:
 
 if __name__ == '__main__':
     awtrix = awtrix_github()
-    # awtrix.load_github_data()
+    #awtrix.load_github_data()
     awtrix.prepare_data()
     awtrix.create_json()
     awtrix.connect_mqtt()
