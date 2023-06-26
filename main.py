@@ -69,7 +69,6 @@ class awtrix_github:
         for i, day in enumerate(self.days):
             if(day[1] != 0):
                 self.days[i] = (day[0], int(float(day[1])/float(self.max_commits)*255.0+30))
-                print(self.days[i][1])
 
     def create_json(self):
         self.app_data = Object()
@@ -82,49 +81,29 @@ class awtrix_github:
         offset = 5
         for i, day in enumerate(self.days):
             if(day[1] != 0):
-                print(day[0])
                 self.app_data.draw.append(Object())
                 row = 7-((i+offset)%7)
                 column = 31-int((i+offset)/7)
-                #app_data.draw[j].dp = [column, row, f"#{day[1]:X}{day[1]:X}{day[1]:X}"]
                 self.app_data.draw[j].dp = [column, row, f"#00{day[1]:02X}00"]
-                #self.app_data.draw[j].dp = [column, row, f"#00FF00"]
                 j += 1
                 if(j >= 16):
                     break
 
-       # print(self.app_data.toJSON())
-
     def send_mqtt_msg(self):
         topic = "awtrix_6ff9b8/notify"
-        msg_count = 1
-        while True:
-            time.sleep(1)
-            msg = f"messages: {msg_count}"
-            result = self.client.publish(topic, self.app_data.toJSON())
-            # result: [0, 1]
-            status = result[0]
-            if status == 0:
-                print(f"Send `{msg}` to topic `{topic}`")
-            else:
-                print(f"Failed to send message to topic {topic}")
-            msg_count += 1
-            if msg_count > 1:
-                break
+        result = self.client.publish(topic, self.app_data.toJSON())
+        # result: [0, 1]
+        status = result[0]
+        if status == 0:
+            print(f"Send msg to topic `{topic}`")
+        else:
+            print(f"Failed to send message to topic {topic}")
 
     def connect_mqtt(self):
         broker = '192.168.178.200'
         port = 1883
         client_id = f'python-mqtt'
-        def on_connect(client, userdata, flags, rc):
-            if rc == 0:
-                print("Connected to MQTT Broker!")
-            else:
-                print("Failed to connect, return code %d\n", rc)
-        # Set Connecting Client ID
         self.client = mqtt_client.Client(client_id)
-        # client.username_pw_set(username, password)
-        self.client.on_connect = on_connect
         self.client.connect(broker, port)
         return self.client
 
