@@ -3,7 +3,7 @@ import json
 from datetime import datetime, timedelta
 import os
 from paho.mqtt import client as mqtt_client
-import time
+import numpy as np
 
 
 class Object:
@@ -17,10 +17,13 @@ class awtrix_github:
     json_commits_path = f"{json_path}/commits"
     max_commits = 0
     days = ["", 0]
+    matrix_width = 24
+    matrix_height = 7
+    pixel_amount = matrix_height * matrix_width
+    api_url = "https://api.github.com/users/hugego88/repos"
 
     def load_github_data(self):
-        api_url = "https://api.github.com/users/hugego88/repos"
-        response = requests.get(api_url)
+        response = requests.get(self.api_url)
         commit_response = ""
         repos = response.json()
 
@@ -48,7 +51,8 @@ class awtrix_github:
         commit_dates = []
         # create list of all days
         base = datetime.today()
-        self.days = [(base - timedelta(days=x), 0) for x in range(180)]
+        self.days = [(base - timedelta(days=x), 0)
+                     for x in range(self.pixel_amount)]
 
         files = os.listdir(f"./{self.json_commits_path}")
         for file in files:
@@ -78,28 +82,36 @@ class awtrix_github:
         self.app_data.icon = 5251
         self.app_data.duration = 10
         self.app_data.draw = [Object()]
-        self.app_data.draw[0].dp = [31, 8, f"#FFFFFF"]
-        self.app_data.draw.pop()
+        bitmap = []
         j = 0
         offset = (7-(datetime.today()).weekday()+5) % 7
+        for x in range(offset):
+            bitmap.append(000000)
         for i, day in enumerate(self.days):
             if (i == 0):
-                self.app_data.draw.append(Object())
-                row = 7-((i+offset) % 7)
-                column = 31-int((i+offset)/7)
-                self.app_data.draw[j].dp = [column, row, f"#FFFFFF"]
-                j += 1
+                bitmap.append(int("1111111111111111", 2))
                 continue
-            if (day[1] != 0):
-                self.app_data.draw.append(Object())
+            if (day[i != 0]):
+                bitmap.append(int("0000011111100000", 2))
                 row = 7-((i+offset) % 7)
                 column = 31-int((i+offset)/7)
-                self.app_data.draw[j].dp = [column, row, f"#00{day[1]:02X}00"]
                 j += 1
+            else:
+                bitmap.append(000000)
+
+        bitmap = bitmap[:-offset]
+        np_array = np.array(bitmap)
+        np_matrix = np_array.reshape(self.matrix_width, self.matrix_height)
+        np_matrix = np.rot90(np_matrix)
+        np_matrix = np.fliplr(np_matrix)
+        bitmap = np_matrix.flatten().tolist()
+
+        self.app_data.draw[0].db = [
+            8, 0, self.matrix_width, self.matrix_height, bitmap]
+        print(self.app_data.toJSON())
 
     def send_mqtt_msg(self, topic):
         result = self.client.publish(topic, self.app_data.toJSON())
-        # result: [0, 1]
         status = result[0]
         if status == 0:
             print(f"Send msg to topic `{topic}`")
