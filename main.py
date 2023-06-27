@@ -21,14 +21,15 @@ class awtrix_github:
     matrix_height = 7
     pixel_amount = matrix_height * matrix_width
     api_url = "https://api.github.com/users/hugego88/repos"
+    repo_file_name = "repos.json"
+    broker_adr = "192.168.178.200"
 
     def load_github_data(self):
         response = requests.get(self.api_url)
         commit_response = ""
         repos = response.json()
 
-        # Writing to repos.json
-        with open(f"{self.json_path}/repos.json", "w") as f:
+        with open(f"{self.json_path}/{self.repo_file_name}", "w") as f:
             json.dump(repos, f, ensure_ascii=False, indent=4)
 
         for repo in repos:
@@ -42,14 +43,12 @@ class awtrix_github:
                     break
                 commits = commit_response.json()
 
-                # Writing to repos.json
                 with open(f"{self.json_commits_path}/{repo_name}{page}.json", "w") as f:
                     json.dump(commits, f, ensure_ascii=False, indent=4)
                 page += 1
 
     def prepare_data(self):
         commit_dates = []
-        # create list of all days
         base = datetime.today()
         self.days = [(base - timedelta(days=x), 0)
                      for x in range(self.pixel_amount)]
@@ -75,7 +74,7 @@ class awtrix_github:
         for i, day in enumerate(self.days):
             if (day[1] != 0):
                 self.days[i] = (day[0], int(
-                    float(day[1])/float(self.max_commits)*100.0+140))
+                    float(day[1])/float(self.max_commits)*32.0+32))
 
     def create_json(self):
         self.app_data = Object()
@@ -92,9 +91,8 @@ class awtrix_github:
                 bitmap.append(int("1111111111111111", 2))
                 continue
             if (day[i != 0]):
-                bitmap.append(int("0000011111100000", 2))
-                row = 7-((i+offset) % 7)
-                column = 31-int((i+offset)/7)
+                bitmap.append(
+                    int("00000" + "{0:b}".format(day[1]) + "00000", 2))
                 j += 1
             else:
                 bitmap.append(000000)
@@ -119,7 +117,7 @@ class awtrix_github:
             print(f"Failed to send message to topic {topic}")
 
     def connect_mqtt(self):
-        broker = '192.168.178.200'
+        broker = self.broker_adr
         port = 1883
         client_id = f'python-mqtt'
         self.client = mqtt_client.Client(client_id)
@@ -136,9 +134,9 @@ class awtrix_github:
 if __name__ == '__main__':
     awtrix = awtrix_github()
     awtrix.create_folders()
-    if (os.path.exists(f"./{awtrix.json_path}/repos.json")):
+    if (os.path.exists(f"./{awtrix.json_path}/{awtrix.repo_file_name}")):
         mod_file_time_str = os.path.getmtime(
-            f"./{awtrix.json_path}/repos.json")
+            f"./{awtrix.json_path}/{awtrix.repo_file_name}")
         t_obj = datetime.fromtimestamp(mod_file_time_str)
         if (t_obj.date() != datetime.today().date()):
             awtrix.load_github_data()
