@@ -23,6 +23,7 @@ class awtrix_github:
     api_url = "https://api.github.com/users/hugego88/repos"
     repo_file_name = "repos.json"
     broker_adr = "192.168.178.200"
+    ulanzi_name = "awtrix_6ff9b8"
 
     def load_github_data(self):
         response = requests.get(self.api_url)
@@ -133,6 +134,7 @@ class awtrix_github:
 
 if __name__ == '__main__':
     awtrix = awtrix_github()
+    awtrix.connect_mqtt()
     awtrix.create_folders()
     if (os.path.exists(f"./{awtrix.json_path}/{awtrix.repo_file_name}")):
         mod_file_time_str = os.path.getmtime(
@@ -144,8 +146,7 @@ if __name__ == '__main__':
         awtrix.load_github_data()
     awtrix.prepare_data()
     awtrix.create_json()
-    awtrix.connect_mqtt()
-    awtrix.send_mqtt_msg("awtrix_6ff9b8/custom/github")
-    awtrix.send_mqtt_msg("awtrix_6ff9b8/notify")
+    awtrix.send_mqtt_msg(f"{awtrix.ulanzi_name}/custom/github")
+    awtrix.send_mqtt_msg(f"{awtrix.ulanzi_name}/notify")
 
     print("end")
