@@ -74,7 +74,7 @@ class awtrix_github:
         for i, day in enumerate(self.days):
             if (day[1] != 0):
                 self.days[i] = (day[0], int(
-                    float(day[1])/float(self.max_commits)*32.0+32))
+                    float(day[1])/float(self.max_commits)*27.0+37))
 
     def create_json(self):
         self.app_data = Object()
