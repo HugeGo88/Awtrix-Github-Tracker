@@ -39,9 +39,12 @@ class awtrix_github:
             page = 1
             commit_url = commit_url + "?page="
             while True:
+                if (page > 5):
+                    break
                 commit_response = requests.get(f"{commit_url}{page}")
                 if (commit_response.text == "[]"):
                     break
+
                 commits = commit_response.json()
 
                 with open(f"{self.json_commits_path}/{repo_name}{page}.json", "w") as f:
