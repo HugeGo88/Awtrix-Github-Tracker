@@ -39,7 +39,7 @@ class awtrix_github:
             page = 1
             commit_url = commit_url + "?page="
             while True:
-                if (page > 5):
+                if (page > 10):
                     break
                 commit_response = requests.get(f"{commit_url}{page}")
                 if (commit_response.text == "[]"):
@@ -73,12 +73,12 @@ class awtrix_github:
                 if (day[0].date() == commit_date.date()):
                     self.days[i] = (day[0], day[1] + 1)
                     if (day[1] > self.max_commits):
-                        self.max_commits = day[1]
+                        self.max_commits = self.days[i][1]
 
         for i, day in enumerate(self.days):
             if (day[1] != 0):
                 self.days[i] = (day[0], int(
-                    float(day[1])/float(self.max_commits)*27.0+37))
+                    float(day[1])/float(self.max_commits)*27.0+37)-1)
 
     def create_json(self):
         self.app_data = Object()
@@ -95,6 +95,7 @@ class awtrix_github:
                 bitmap.append(int("1111111111111111", 2))
                 continue
             if (day[i != 0]):
+                print("{0:b}".format(day[1]))
                 bitmap.append(
                     int("00000" + "{0:b}".format(day[1]) + "00000", 2))
                 j += 1
