@@ -95,9 +95,8 @@ class awtrix_github:
                 bitmap.append(int("1111111111111111", 2))
                 continue
             if (day[i != 0]):
-                print("{0:b}".format(day[1]))
                 bitmap.append(
-                    int("00000" + "{0:b}".format(day[1]) + "00000", 2))
+                    int("{0:05b}".format(int(day[1]/4)) + "{0:b}".format(day[1]) + "{0:05b}".format(int(day[1]/4)), 2))
                 j += 1
             else:
                 bitmap.append(000000)
