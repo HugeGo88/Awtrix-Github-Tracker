@@ -15,13 +15,14 @@ class Object:
 class awtrix_github:
     json_path = "json"
     json_commits_path = f"{json_path}/commits"
+    repo_file_name = "repos.json"
     max_commits = 0
     days = ["", 0]
     matrix_width = 24
     matrix_height = 7
     pixel_amount = matrix_height * matrix_width
-    api_url = "https://api.github.com/users/hugego88/repos"
-    repo_file_name = "repos.json"
+    user = "hugego88"
+    api_url = f"https://api.github.com/users/{user}/repos"
     broker_adr = "192.168.178.200"
     ulanzi_name = "awtrix_6ff9b8"
 
@@ -101,7 +102,8 @@ class awtrix_github:
             else:
                 bitmap.append(000000)
 
-        bitmap = bitmap[:-offset]
+        if (offset != 0):
+            bitmap = bitmap[:-offset]
         np_array = np.array(bitmap)
         np_matrix = np_array.reshape(self.matrix_width, self.matrix_height)
         np_matrix = np.rot90(np_matrix)
