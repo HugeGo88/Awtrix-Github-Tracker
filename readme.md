@@ -10,7 +10,7 @@ Today will be displayed with a white Pixel
 - [x] Today will be displayed with a white pixel
 - [x] Display matrix icon as eye cather 
 - [x] Diffenrent brightness for different commits depending on amount
-- [ ] display different months with indicators
+- [x] display different months with indicators
 
  ## Display vs Github                 
 Display

@@ -102,16 +102,25 @@ class awtrix_github:
             else:
                 bitmap.append(000000)
 
-        if (offset != 0):
-            bitmap = bitmap[:-offset]
+        indicators = np.zeros(shape=(1, 24), dtype=int)
+        base = datetime.today()
+        for days in range(self.matrix_width * self.matrix_height, -1, -1):
+            if ((base-timedelta(days=days)).month != (base-timedelta(days=days+1)).month):
+                month_shift = (int(days/7))
+                indicators[0][month_shift] = int("1111111111111111", 2)
+        # for idx, x in np.ndenumerate(indicators):
+        #     if (idx[1] % 4 == 0):
+        #         indicators[idx] = int("1111111111111111", 2)
+        bitmap = bitmap[0:(self.matrix_width*self.matrix_height)]
         np_array = np.array(bitmap)
         np_matrix = np_array.reshape(self.matrix_width, self.matrix_height)
         np_matrix = np.rot90(np_matrix)
         np_matrix = np.fliplr(np_matrix)
-        bitmap = np_matrix.flatten().tolist()
+        combined = np.concatenate((indicators, np_matrix), axis=0)
+        bitmap = combined.flatten().tolist()
 
         self.app_data.draw[0].db = [
-            8, 1, self.matrix_width, self.matrix_height, bitmap]
+            8, 0, self.matrix_width, self.matrix_height+1, bitmap]
         print(self.app_data.toJSON())
 
     def send_mqtt_msg(self, topic):
