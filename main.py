@@ -111,7 +111,7 @@ class awtrix_github:
         bitmap = np_matrix.flatten().tolist()
 
         self.app_data.draw[0].db = [
-            8, 0, self.matrix_width, self.matrix_height, bitmap]
+            8, 1, self.matrix_width, self.matrix_height, bitmap]
         print(self.app_data.toJSON())
 
     def send_mqtt_msg(self, topic):
