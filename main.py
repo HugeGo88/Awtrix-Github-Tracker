@@ -106,11 +106,8 @@ class awtrix_github:
         base = datetime.today()
         for days in range(self.matrix_width * self.matrix_height, -1, -1):
             if ((base-timedelta(days=days)).month != (base-timedelta(days=days+1)).month):
-                month_shift = (int(days/7))
+                month_shift = (int((days-offset)/7))
                 indicators[0][month_shift] = int("1111111111111111", 2)
-        # for idx, x in np.ndenumerate(indicators):
-        #     if (idx[1] % 4 == 0):
-        #         indicators[idx] = int("1111111111111111", 2)
         bitmap = bitmap[0:(self.matrix_width*self.matrix_height)]
         np_array = np.array(bitmap)
         np_matrix = np_array.reshape(self.matrix_width, self.matrix_height)
