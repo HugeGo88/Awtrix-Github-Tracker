@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import os
 from paho.mqtt import client as mqtt_client
 import numpy as np
+from PIL import Image
 
 
 class Object:
@@ -106,7 +107,7 @@ class awtrix_github:
         base = datetime.today()
         for days in range(self.matrix_width * self.matrix_height, -1, -1):
             if ((base-timedelta(days=days)).month != (base-timedelta(days=days+1)).month):
-                month_shift = (int((days-offset)/7))
+                month_shift = (int((days-datetime.today().weekday())/7))
                 indicators[0][month_shift] = int("1111111111111111", 2)
         bitmap = bitmap[0:(self.matrix_width*self.matrix_height)]
         np_array = np.array(bitmap)
@@ -118,6 +119,9 @@ class awtrix_github:
 
         self.app_data.draw[0].db = [
             8, 0, self.matrix_width, self.matrix_height+1, bitmap]
+
+        # im = Image.fromarray(combined)
+        # im.save("your_file.png")
         print(self.app_data.toJSON())
 
     def send_mqtt_msg(self, topic):
