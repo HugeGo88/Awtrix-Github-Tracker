@@ -26,6 +26,7 @@ class awtrix_github:
     api_url = f"https://api.github.com/users/{user}/repos"
     broker_adr = "192.168.178.200"
     ulanzi_name = "awtrix_6ff9b8"
+    current_dir = os.getcwd()
 
     def load_github_data(self):
         response = requests.get(self.api_url)
@@ -59,9 +60,9 @@ class awtrix_github:
         self.days = [(base - timedelta(days=x), 0)
                      for x in range(self.pixel_amount)]
 
-        files = os.listdir(f"./{self.json_commits_path}")
+        files = os.listdir(f"{self.current_dir}/{self.json_commits_path}")
         for file in files:
-            f = open(f"./{self.json_commits_path}/{file}")
+            f = open(f"{self.current_dir}/{self.json_commits_path}/{file}")
             commits = json.load(f)
             for commit in commits:
                 commit_date_str = commit["commit"]["committer"]["date"]
@@ -141,19 +142,19 @@ class awtrix_github:
         return self.client
 
     def create_folders(self):
-        if not (os.path.exists(f"./{self.json_path}")):
-            os.makedirs(f"./{self.json_path}")
-        if not (os.path.exists(f"./{self.json_commits_path}")):
-            os.makedirs(f"./{self.json_commits_path}")
+        if not (os.path.exists(f"{self.current_dir}/{self.json_path}")):
+            os.makedirs(f"{self.current_dir}/{self.json_path}")
+        if not (os.path.exists(f"{self.current_dir}/{self.json_commits_path}")):
+            os.makedirs(f"{self.current_dir}/{self.json_commits_path}")
 
 
 if __name__ == '__main__':
     awtrix = awtrix_github()
     awtrix.connect_mqtt()
     awtrix.create_folders()
-    if (os.path.exists(f"./{awtrix.json_path}/{awtrix.repo_file_name}")):
+    if (os.path.exists(f"{awtrix.current_dir}/{awtrix.json_path}/{awtrix.repo_file_name}")):
         mod_file_time_str = os.path.getmtime(
-            f"./{awtrix.json_path}/{awtrix.repo_file_name}")
+            f"{awtrix.current_dir}/{awtrix.json_path}/{awtrix.repo_file_name}")
         t_obj = datetime.fromtimestamp(mod_file_time_str)
         if (t_obj.date() != datetime.today().date()):
             awtrix.load_github_data()
