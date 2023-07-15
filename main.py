@@ -33,7 +33,7 @@ class awtrix_github:
         commit_response = ""
         repos = response.json()
 
-        with open(f"{self.json_path}/{self.repo_file_name}", "w") as f:
+        with open(f"{self.current_dir}/{self.json_path}/{self.repo_file_name}", "w") as f:
             json.dump(repos, f, ensure_ascii=False, indent=4)
 
         for repo in repos:
@@ -50,7 +50,7 @@ class awtrix_github:
 
                 commits = commit_response.json()
 
-                with open(f"{self.json_commits_path}/{repo_name}{page}.json", "w") as f:
+                with open(f"{self.current_dir}/{self.json_commits_path}/{repo_name}{page}.json", "w") as f:
                     json.dump(commits, f, ensure_ascii=False, indent=4)
                 page += 1
 
