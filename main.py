@@ -24,7 +24,7 @@ class awtrix_github:
     pixel_amount = matrix_height * matrix_width
     user = "hugego88"
     api_url = f"https://api.github.com/users/{user}/repos"
-    broker_adr = "192.168.178.200"
+    broker_adr = "192.168.178.53"
     ulanzi_name = "awtrix_6ff9b8"
     current_dir = os.path.dirname(os.path.realpath(__file__))
 
