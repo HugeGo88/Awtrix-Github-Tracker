@@ -5,6 +5,7 @@ import os
 from paho.mqtt import client as mqtt_client
 import numpy as np
 from PIL import Image
+from config import config
 
 
 class Object:
@@ -22,10 +23,7 @@ class awtrix_github:
     matrix_width = 24
     matrix_height = 7
     pixel_amount = matrix_height * matrix_width
-    user = "hugego88"
-    api_url = f"https://api.github.com/users/{user}/repos"
-    broker_adr = "192.168.178.53"
-    ulanzi_name = "awtrix_6ff9b8"
+    api_url = f"https://api.github.com/users/{config.user}/repos"
     current_dir = os.path.dirname(os.path.realpath(__file__))
 
     def load_github_data(self):
@@ -86,7 +84,7 @@ class awtrix_github:
     def create_json(self):
         self.app_data = Object()
         self.app_data.icon = 5251
-        self.app_data.duration = 10
+        self.app_data.duration = 100
         self.app_data.draw = [Object()]
         bitmap = []
         j = 0
@@ -95,11 +93,10 @@ class awtrix_github:
             bitmap.append(000000)
         for i, day in enumerate(self.days):
             if (i == 0):
-                bitmap.append(int("1111111111111111", 2))
+                bitmap.append(0xFFFFFF)
                 continue
             if (day[i != 0]):
-                bitmap.append(
-                    int("{0:05b}".format(int(day[1]/4)) + "{0:b}".format(day[1]) + "{0:05b}".format(int(day[1]/4)), 2))
+                bitmap.append(256*i)
                 j += 1
             else:
                 bitmap.append(000000)
@@ -109,7 +106,7 @@ class awtrix_github:
         for days in range(self.matrix_width * self.matrix_height, -1, -1):
             if ((base-timedelta(days=days)).month != (base-timedelta(days=days+1)).month):
                 month_shift = (int((days-datetime.today().weekday())/7))
-                indicators[0][month_shift] = int("1111111111111111", 2)
+                indicators[0][month_shift] = 0xFFFFFF
         bitmap = bitmap[0:(self.matrix_width*self.matrix_height)]
         np_array = np.array(bitmap)
         np_matrix = np_array.reshape(self.matrix_width, self.matrix_height)
@@ -121,8 +118,6 @@ class awtrix_github:
         self.app_data.draw[0].db = [
             8, 0, self.matrix_width, self.matrix_height+1, bitmap]
 
-        # im = Image.fromarray(combined)
-        # im.save("your_file.png")
         print(self.app_data.toJSON())
 
     def send_mqtt_msg(self, topic):
@@ -134,10 +129,12 @@ class awtrix_github:
             print(f"Failed to send message to topic {topic}")
 
     def connect_mqtt(self):
-        broker = self.broker_adr
+        broker = config.broker_adr
         port = 1883
         client_id = f'python-mqtt'
         self.client = mqtt_client.Client(client_id)
+        self.client.username_pw_set(
+            config.mqtt_user_name, config.mqtt_password)
         self.client.connect(broker, port)
         return self.client
 
@@ -162,7 +159,7 @@ if __name__ == '__main__':
         awtrix.load_github_data()
     awtrix.prepare_data()
     awtrix.create_json()
-    awtrix.send_mqtt_msg(f"{awtrix.ulanzi_name}/custom/github")
-    awtrix.send_mqtt_msg(f"{awtrix.ulanzi_name}/notify")
+    awtrix.send_mqtt_msg(f"{config.awtrix_name}/custom/github")
+    awtrix.send_mqtt_msg(f"{config.awtirx_name}/notify")
 
     print("end")
