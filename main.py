@@ -23,7 +23,7 @@ class awtrix_github:
     matrix_width = 24
     matrix_height = 7
     pixel_amount = matrix_height * matrix_width
-    api_url = f"https://api.github.com/users/{config.user}/repos"
+    api_url = f"https://api.github.com/users/{config.github_user}/repos"
     current_dir = os.path.dirname(os.path.realpath(__file__))
 
     def load_github_data(self):
@@ -84,7 +84,7 @@ class awtrix_github:
     def create_json(self):
         self.app_data = Object()
         self.app_data.icon = 5251
-        self.app_data.duration = 100
+        self.app_data.duration = 10
         self.app_data.draw = [Object()]
         bitmap = []
         j = 0
@@ -134,7 +134,7 @@ class awtrix_github:
         client_id = f'python-mqtt'
         self.client = mqtt_client.Client(client_id)
         self.client.username_pw_set(
-            config.mqtt_user_name, config.mqtt_password)
+            config.broker_user_name, config.broker_password)
         self.client.connect(broker, port)
         return self.client
 

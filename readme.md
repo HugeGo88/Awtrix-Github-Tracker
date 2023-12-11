@@ -11,9 +11,15 @@ Today will be displayed with a white Pixel
 - [x] Display matrix icon as eye cather 
 - [x] Diffenrent brightness for different commits depending on amount
 - [x] display different months with indicators
+- [ ] Add issues to graph. Otherwise pixel will miss on Awrtix
+
+## What to do
+1. You need to rename the config_smaple.py to config.py
+2. Fill in necessarry information
+3. Have fun
 
  ## Display vs Github                 
 Display
- ![Display](./images/display.jpeg)
+ ![Display](./images/display.png)
 Github 
 ![Github](./images/github.png) 
