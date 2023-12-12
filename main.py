@@ -79,7 +79,7 @@ class awtrix_github:
         for i, day in enumerate(self.days):
             if (day[1] != 0):
                 self.days[i] = (day[0], int(
-                    float(day[1])/float(self.max_commits)*27.0+37)-1)
+                    float(day[1])/float(self.max_commits)*192)+64)
 
     def create_json(self):
         self.app_data = Object()
@@ -96,7 +96,7 @@ class awtrix_github:
                 bitmap.append(0xFFFFFF)
                 continue
             if (day[i != 0]):
-                bitmap.append(256*i)
+                bitmap.append(256*day[1])
                 j += 1
             else:
                 bitmap.append(000000)
@@ -160,6 +160,6 @@ if __name__ == '__main__':
     awtrix.prepare_data()
     awtrix.create_json()
     awtrix.send_mqtt_msg(f"{config.awtrix_name}/custom/github")
-    awtrix.send_mqtt_msg(f"{config.awtirx_name}/notify")
+    awtrix.send_mqtt_msg(f"{config.awtrix_name}/notify")
 
     print("end")
