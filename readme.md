@@ -20,6 +20,6 @@ Today will be displayed with a white Pixel
 
  ## Display vs Github                 
 Display
- ![Display](./images/display.png)
+ ![Display](./images/awtrix.gif)
 Github 
 ![Github](./images/github.png) 

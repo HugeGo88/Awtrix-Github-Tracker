@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 import os
 from paho.mqtt import client as mqtt_client
 import numpy as np
-from PIL import Image
 from config import config
 
 
@@ -79,7 +78,7 @@ class awtrix_github:
         for i, day in enumerate(self.days):
             if (day[1] != 0):
                 self.days[i] = (day[0], int(
-                    float(day[1])/float(self.max_commits)*192)+64)
+                    float(day[1])/float(self.max_commits)*255))
 
     def create_json(self):
         self.app_data = Object()
